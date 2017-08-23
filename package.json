@@ -12,7 +12,11 @@
   },
   "dependencies": {
     "ejs": "2.5.6",
-    "express": "4.15.2"
+    "ejs-lint": "^0.3.0",
+    "express": "4.15.2",
+    "glyphicons-css": "^1.1.0",
+    "node-fieldbook": "^1.1.1",
+    "requestify": "^0.2.5"
   },
   "devDependencies": {
     "request": "^2.81.0",

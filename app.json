@@ -1,8 +1,7 @@
 {
-  "name": "Start on Heroku: Node.js",
+  "name": "Preference Card Project",
   "description": "A barebones Node.js app using Express 4",
-  "repository": "https://github.com/heroku/node-js-getting-started",
-  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
-  "keywords": ["node", "express", "heroku"],
+  "repository": "https://github.com/allisonfong/preference-card-project",
+  "keywords": ["node", "express", "heroku", "fieldbook"],
   "image": "heroku/nodejs"
 }

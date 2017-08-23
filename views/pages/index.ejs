@@ -1,66 +1,132 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <% include ../partials/header.ejs %>
-</head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Preference Card Database</title>
 
-<body>
+    <!-- Bootstrap -->
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="/stylesheets/bootstrap-grid.css" rel="stylesheet">
+    <link href="/stylesheets/font-awesome.min.css" rel="stylesheet">
+    <link href="/stylesheets/main.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+          <![endif]-->
+          <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 
-  <% include ../partials/nav.ejs %>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
-<div class="jumbotron text-center">
-  <div class="container">
-    <a href="/" class="lang-logo">
-      <img src="/lang-logo.png">
-    </a>
-    <h1>Getting Started with Node on Heroku v1.0 dev branch</h1>
-    <p>This is a sample Node application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
-    <a type="button" class="btn btn-lg btn-default" href="https://devcenter.heroku.com/articles/getting-started-with-nodejs"><span class="glyphicon glyphicon-flash"></span> Getting Started with Node</a>
-    <a type="button" class="btn btn-lg btn-primary" href="https://github.com/heroku/node-js-getting-started"><span class="glyphicon glyphicon-download"></span> Source on GitHub</a>
-  </div>
-</div>
-<div class="container">
-  <div class="alert alert-info text-center" role="alert">
-    To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to the <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs" class="alert-link">Getting Started with Node on Heroku</a> tutorial.
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-info-sign"></span> How this sample app works</h3>
-      <ul>
-        <li>This app was deployed to Heroku, either using Git or by using <a href="https://github.com/heroku/node-js-getting-started">Heroku Button</a> on the repository.</li>
+  </head>
+  <body>
+    <div class="container">
+        <div class="header clearfix">
+            <h1 class="text-muted title">Preference Card Project</h1>
+        </div>
+        <div id="content">
+          <div class="row">
+            <div class="col-md-4">
+              <label for="surgeon">Surgeon: </label>
+              <input type="text" class="form-control" placeholder="Surgeon">
+            </div>
+            <div class="col-md-4">
+              <label for="procedure">Procedure: </label>
+              <input id="procedureInput" type="text" class="form-control" placeholder="Procedure">
+            </div>
+            <div class="col-md-4">
+              <i class="fa fa-search" aria-hidden="true"></i>
+              <i class="fa fa-print" aria-hidden="true"></i>
+              <i class="fa fa-cart-plus" aria-hidden="true"></i>
+            </div>
+          </div>
+          <% results.forEach(function(r) { %>
+          <div class="row">
+            Surgeon: <%= surgeon %>
+            Procedure: <%= procedure %>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="equipment">Equipment</label>
+                </div>
+                <div class="col-md-4">
+                  <ul>
+                  <% if(r.equipment) { %>
+                    <% r.equipment.forEach(function(e) { %>
+                      <li><%= e.equipment %></li>
+                    <% }); %>
+                  <% } %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="trays">Trays</label>
+                </div>
+                <div class="col-md-4">
+                  <ul>
+                  <% if(r.trays) { %>
+                    <% r.trays.forEach(function(t) { %>
+                      <li><%= t.tray %></li>
+                    <% }); %>
+                  <% } %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="medications">Medications</label>
+                </div>
+                <div class="col-md-4">
+                  <ul>
+                  <% if (r.medications) { %>
+                    <% r.medications.forEach(function(m) { %>
+                      <li><%= m.medication %></li>
+                    <% }); %>
+                  <% } %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="Notes">Notes</label>
+                </div>
+                <div class="col-md-4">
+                  <%= r.comment %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }); %> 
+        </div>
 
-        <li>When Heroku received the source code, it fetched all the dependencies in the <a href="https://github.com/heroku/node-js-getting-started/blob/master/package.json">package.json</a>, creating a deployable slug.</li>
-        <li>The platform then spins up a dyno, a lightweight container that provides an isolated environment in which the slug can be mounted and executed.</li>
-        <li>You can scale your app, manage it, and deploy over <a href="https://addons.heroku.com/">150 add-on services</a>, from the Dashboard or CLI.</li>
-      </ul>
     </div>
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-link"></span> Next Steps</h3>
-      <ul>
-        <li>If you are following the <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">Getting Started</a> guide, then please head back to the tutorial and follow the next steps!</li>
-        <li>If you deployed this app by deploying the Heroku Button, then in a command line shell, run:</li>
-        <ul>
-          <li><code>git clone https://github.com/heroku/node-js-getting-started.git</code> - this will create a local copy of the source code for the app</li>
-          <li><code>cd node-js-getting-started</code> - change directory into the local source code repository</li>
-          <li><code>heroku git:remote -a &lt;your-app-name></code> - associate the Heroku app with the repository</li>
-          <li>You'll now be set up to run the app locally, or <a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs#push-local-changes">deploy changes</a> to Heroku</li>
-        </ul>
-      </ul>
-      <h3><span class="glyphicon glyphicon-link"></span> Helpful Links</h3>
-      <ul>
-        <li><a href="https://www.heroku.com/home">Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/">Heroku Dev Center</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/getting-started-with-nodejs">Getting Started with Node on Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/deploying-nodejs">Deploying Node Apps on Heroku</a></li>
-      </ul>
-    </div>
-  </div> <!-- row -->
-   <div class="alert alert-info text-center" role="alert">
-    Please do work through the Getting Started guide, even if you do know how to build such an application.  The guide covers the basics of working with Heroku, and will familiarize you with all the concepts you need in order to build and deploy your own apps.
-  </div>
-</div>
 
 
-</body>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/awesomplete.min.js"></script>
+    <script>
+      var input = document.getElementById("procedureInput");
+
+      // Show label but insert value into the input:
+      new Awesomplete(input, {
+	list: <%- JSON.stringify(procedureList) %>
+      });
+    </script>
+  </body>
 </html>
