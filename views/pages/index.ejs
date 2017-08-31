@@ -45,9 +45,13 @@
             </div>
           </div>
           <% results.forEach(function(r) { %>
+          <div style="border: 1px solid #808080">
           <div class="row">
-            Surgeon: <%= surgeon %>
+            <div class="col-md-12">
+            Preference Id: <%= r.id%><br>
+            Surgeon: <%= surgeon %><br>
             Procedure: <%= procedure %>
+            </div>
           </div>
           <div class="row">
             <div class="col-md-6">
@@ -110,6 +114,7 @@
                 </div>
               </div>
             </div>
+          </div>
           </div>
           <% }); %> 
         </div>
