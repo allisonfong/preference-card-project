@@ -24,4 +24,40 @@
     border: 2px solid white; }
     .jumbotron .lang-logo img {
       max-width: 100%; }
+i.fa {
+  font-size: 25px;
+}
+button.btn {
+  background-color: #FFF;
+}
 
+.form-check-input {
+  margin-left: 0;
+}
+ul {
+  list-style-type: none;
+}
+.card {
+  border: 1px solid #808080;
+  margin: 20px 0;
+  ul {
+    list-style-type: none;
+  }
+}
+.card-header {
+  padding: 20px;
+  background-color: #BDBDBD;
+  border-bottom: 1px solid #808080;
+  margin: 0px;
+}
+.card-body {
+  padding: 20px;
+  margin: 0px
+}
+label.card-label {
+  font-weight: bold;
+}
+
+h1 {
+  padding: 20px 0;
+}

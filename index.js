@@ -6,16 +6,15 @@ var Fieldbook = require('node-fieldbook');
 var requestify = require('requestify');
 var ejsLint = require('ejs-lint');
 
-var bookId = '598603f8789bad0400ee5c36';
+//var bookId = '598603f8789bad0400ee5c36';
+var bookId = '5960e0dab93bd8030008699d';
 var baseUrl = 'https://api.fieldbook.com/v1/' + bookId;
 var options = {
     headers: {accept: 'application/json'},
 
     auth: {
-        //username: process.env.FIELDBOOK_USER,
-        //password: process.env.FIELDBOOK_KEY
-        username: 'key-1',
-        password: 'OaPjWb6dYuSQ_tmX4vX-'
+        username: process.env.FIELDBOOK_USER,
+        password: process.env.FIELDBOOK_KEY
     }
 };
 
@@ -32,49 +31,49 @@ app.get('/', function(request, response) {
   var surgeon = request.query.surgeon;
   var procedure = request.query.procedure;
   var results = [];
-  getProcedures()
-  .then(procedureDict => {
-  //console.log('PROCEDURE LIST: ' + JSON.stringify(procedureList));
-  if (procedure) {
-    var procedureId = procedureDict[procedure];
-    console.log('PROCEDURE ID: ' + procedureId);
-    getProcedure(procedureId)
-    .then(p => {
-      console.log('P: ' + JSON.stringify(p));
-      var promiseChain = [];
-      //for (var i in p) {
-        var preferences = p.preferences;
+  var lint = ejsLint('views/pages/index.ejs', {results: results});
+  getProceduresAndSurgeons()
+  .then(ps => {
+    console.log('PROCEDURE LIST');
+    var procedureList = Object.keys(ps.procedures);
+    var surgeonList = Object.keys(ps.surgeons);
+    //console.log('PROCEDURE LIST: ' + JSON.stringify(ps[0]));
+    if (procedure || surgeon) {
+      var procedureDict = ps.procedures;
+      var procedureId = procedureDict[procedure];
+      var surgeonId = ps.surgeons[surgeon];
+      console.log('PROCEDURE ID: ' + procedureId);
+      getProcedureSurgeonPreferences(procedureId, surgeonId)
+      .then(preferences => {
         console.log('** PREFERENCES: ' + preferences);
+        var promiseChain = [];
         for (var j in preferences) {
-          promiseChain.push(getPreference(preferences[j].id));
+          promiseChain.push(getPreference(preferences[j]));
         }
-      //}
-      Promise.all(promiseChain)
-      .then(data => {
-        for(var k in data) {
-          results.push(data[k]);
-        }
-      var procedureList = Object.keys(procedureDict);
-      var lint = ejsLint('views/pages/index.ejs', {results: results});
-      console.log('RESULTS: ' + JSON.stringify(results));
-      console.log('LINT ERRORS: ' + JSON.stringify(lint));
-      response.render('pages/index', {
-        results: results,
-        procedureList: procedureList,
-        surgeon: surgeon,
-        procedure: procedure
+        Promise.all(promiseChain)
+        .then(data => {
+          for(var k in data) {
+            results.push(data[k]);
+          }
+          console.log('RESULTS: ' + JSON.stringify(results));
+          console.log('LINT ERRORS: ' + JSON.stringify(lint));
+          response.render('pages/index', {
+            results: results,
+            procedureList: procedureList,
+            surgeonList: surgeonList,
+            surgeon: surgeon,
+            procedure: procedure
+          });
+        });
       });
-      });
-    });
-  } else {
+    } else {
       console.log('ELSE');
-      var procedureList = Object.keys(procedureDict);
-      var lint = ejsLint('views/pages/index.ejs', {results: results});
       console.log('RESULTS: ' + JSON.stringify(results));
       console.log('LINT ERRORS: ' + JSON.stringify(lint));
       response.render('pages/index', {
         results: results,
         procedureList: procedureList,
+        surgeonList: surgeonList,
         surgeon: surgeon,
         procedure: procedure
       });
@@ -85,6 +84,34 @@ app.get('/', function(request, response) {
   //.catch(err => conosle.log('ERROR: ' + err));
 });
 
+app.get('/print', function(request, response) {
+  console.log('REQUEST: ' + JSON.stringify(request.query));
+  var preference = [];
+  var results = [];
+  var lint = ejsLint('views/pages/print.ejs', {results: results});
+  var promiseChain = [];
+  console.log('TYPE OF ' + typeof request.query.preference);
+  if (typeof request.query.preference === "string") {
+    preference.push(request.query.preference);
+  } else {
+    preference = request.query.preference;
+  }
+  for (var j in preference) {
+    console.log('J: ' + JSON.stringify(preference[j]));
+    promiseChain.push(getPreference(preference[j]));
+  }
+  Promise.all(promiseChain)
+  .then(data => {
+    for(var k in data) {
+      results.push(data[k]);
+    }
+    console.log('RESULTS: ' + JSON.stringify(results));
+    console.log('LINT ERRORS: ' + JSON.stringify(lint));
+    response.render('pages/print', {
+      results: results,
+    });
+  });
+});
 //var preferenceCardRoute = require('./routes/preferenceCard.js');
 
 //router.use('/api/v1/preferenceCard', preferenceCardRoute);
@@ -113,7 +140,7 @@ function getMultiplePreferences(prefrences) {
 function getSurgeon(surgeon) {
   return new Promise(
     function (resolve, reject) {
-      var url = baseUrl + '/surgeons?surgeon=' + surgeon;
+      var url = baseUrl + '/surgeons/' + surgeon;
       requestify.get(url, options)
       .then (function(response) {
         console.log('SURGEON RESULTS: ' + JSON.stringify(response.getBody()));
@@ -135,26 +162,112 @@ function getProcedure(procedure) {
       });
     }
   );
-};
+}
 
-function getProcedures() {
+function getProcedureSurgeonPreferences(procedure, surgeon) {
+  return new Promise(function (resolve, reject) {
+    console.log('START OF GET SPP');
+    var preferenceIds = [];
+    var promiseChain = [];
+    if (procedure) {
+      console.log('IF PROCEDURE');
+      if (surgeon) {
+        console.log('PROCEDURE AND SURGEON');
+        promiseChain.push(getProcedure(procedure));
+        promiseChain.push(getSurgeon(surgeon));
+        Promise.all(promiseChain)
+        .then(data => {
+          var pPreferenceIds = [];
+          var s = data[1];
+          var p = data[0];
+          for(var j in p.preferences) {
+            pPreferenceIds.push(data[0].preferences[j].id);
+          }
+          for(var i in s.preferences) {
+            console.log('HELLO: ' + pPreferenceIds.indexOf(s.preferences[i].id));
+            if(pPreferenceIds.indexOf( s.preferences[i].id ) > -1){
+              console.log(s.preferences[i].id);
+              preferenceIds.push( s.preferences[i].id );
+            }
+          }
+          resolve(preferenceIds);
+        });
+       
+      } else {
+        console.log('ONLY PROCEDURE');
+        getProcedure(procedure)
+        .then(p => {
+          for (var i in p.preferences) {
+            preferenceIds.push(p.preferences[i].id);
+          }
+          resolve(preferenceIds);
+        });
+      }
+    } else if (surgeon) {
+      console.log('ONLY SURGEON');
+      getSurgeon(surgeon)
+      .then(s => {
+        for (var i in s.preferences) {
+          preferenceIds.push(s.preferences[i].id);
+        }
+        resolve(preferenceIds);
+      });
+    } else {
+      console.log('NEITHER');
+      resolve(null);
+    }
+  });
+}
+
+function getProceduresAndSurgeons() {
   return new Promise(
     function (resolve, reject) {
       var url = baseUrl + '/procedures';
-      requestify.get(url, options)
-      .then (function(response) {
-        var results = response.getBody();
+      var ps = {};
+      var promiseChain = [];
+      console.log('GET PRCOEDURES AND SURGEONS');
+      promiseChain.push(requestify.get(url, options));
+      url = baseUrl + '/surgeons';
+      promiseChain.push(requestify.get(url, options));
+      Promise.all(promiseChain)
+      .then(data => {
+      //requestify.get(url, options)
+      //.then (function(response) {
+        //console.log('PROCEDURE RESPONSE: ' + JSON.stringify(response));
+        console.log('PROCEDURE RESPONSE');
+        var results = data[0].getBody();
         var list = [];
-        var dict = {};
+        var procedures = {};
         for (var i in results) {
-          list.push(results[i].a_p_repair);
-          dict[results[i].a_p_repair] = results[i].id;
+          procedures[results[i].procedure] = results[i].id;
         }
-        resolve(dict);
+        console.log('after loop');
+        ps.procedures = procedures;
+        //console.log('PS: ' + JSON.stringify(ps));
+        //url = baseUrl + '/surgeons';
+        //requestify.get(url, options)
+        //.then (function(response) {
+          console.log('surgeon response');
+          //console.log('SURGEON RESPONSE: ' + JSON.stringify(response));
+          var body = data[1].getBody();
+          var surgeons = {};
+          
+          for (var j in body) {
+            surgeons[body[j].surgeon] = body[j].id;
+          }
+          ps.surgeons = surgeons;
+          console.log('END');
+          resolve(ps);
+        //});
+      })
+      .catch(function(err) {
+        console.log('ERROR in getProceduresAndSurgeons()');
+        console.log(err);
+        reject(err);
       });
     }
   );
-};
+}
 
 function getPreference(preferenceId) {
   return new Promise(
@@ -168,7 +281,7 @@ function getPreference(preferenceId) {
       });
     }
   );
-};
+}
 
 function getPreferences() {
   return new Promise(
@@ -181,7 +294,7 @@ function getPreferences() {
       });
     }
   );
-};
+}
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));

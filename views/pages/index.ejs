@@ -11,6 +11,7 @@
     <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
     <link href="/stylesheets/bootstrap-grid.css" rel="stylesheet">
     <link href="/stylesheets/font-awesome.min.css" rel="stylesheet">
+    <link href="/stylesheets/awesomplete.css" rel="stylesheet">
     <link href="/stylesheets/main.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -26,43 +27,53 @@
   <body>
     <div class="container">
         <div class="header clearfix">
-            <h1 class="text-muted title">Preference Card Project</h1>
+            <h1 class="text-muted title">Preference Card Database</h1>
         </div>
         <div id="content">
+          <form action="/" method="get" id="form-ps">
           <div class="row">
             <div class="col-md-4">
-              <label for="surgeon">Surgeon: </label>
-              <input type="text" class="form-control" placeholder="Surgeon">
+              <label for="surgeon" class="card-label">Surgeon: </label>
+              <input id="surgeonInput" name="surgeon" type="text" value="<%= surgeon%>" class="form-control awesomplete" placeholder="Surgeon">
             </div>
             <div class="col-md-4">
-              <label for="procedure">Procedure: </label>
-              <input id="procedureInput" type="text" class="form-control" placeholder="Procedure">
+              <label for="procedure" class="card-label">Procedure: </label>
+              <input id="procedureInput" name="procedure" type="text" value="<%= procedure%>" class="form-control awesomplete" placeholder="Procedure">
             </div>
             <div class="col-md-4">
-              <i class="fa fa-search" aria-hidden="true"></i>
-              <i class="fa fa-print" aria-hidden="true"></i>
-              <i class="fa fa-cart-plus" aria-hidden="true"></i>
+              <button type="submit" class="btn">
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </button>
+              <button type="submit" form="form-print" class="btn">
+                <i class="fa fa-print" aria-hidden="true"></i>
+              </button>
             </div>
+          </form>
           </div>
+          <form action="/print" method="get" id="form-print">
           <% results.forEach(function(r) { %>
-          <div style="border: 1px solid #808080">
-          <div class="row">
+          <div class="card">
+          <div class="row card-header">
             <div class="col-md-12">
-            Preference Id: <%= r.id%><br>
-            Surgeon: <%= surgeon %><br>
-            Procedure: <%= procedure %>
+              <div class="form-check">
+                <label class="card-label" style="margin-right: 10px">Select to Print: </label>
+                <input class="form-check-input" type="checkbox" value="<%=r.id%>" name="preference">
+              </div>
+              <label class="card-label">Preference Id:</label> <%= r.id%><br />
+              <label class="card-label">Surgeon: </label><% if(r.surgeon) { %> <% r.surgeon.forEach(function(s) { %> <%= s.surgeon %>, <% }); %> <% } %> <br />
+              <label class="card-label">Procedure: </label><% if(r.procedure) { %> <% r.procedure.forEach(function(p) { %> <%= p.procedure %>, <% }); %> <% } %> <br />
             </div>
           </div>
-          <div class="row">
+          <div class="row card-body">
             <div class="col-md-6">
               <div class="row">
                 <div class="col-md-2">
-                  <label for="equipment">Equipment</label>
+                  <label class="card-label" for="equipment">Equipment:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-10">
                   <ul>
-                  <% if(r.equipment) { %>
-                    <% r.equipment.forEach(function(e) { %>
+                  <% if(r.specific_equipment) { %>
+                    <% r.specific_equipment.forEach(function(e) { %>
                       <li><%= e.equipment %></li>
                     <% }); %>
                   <% } %>
@@ -73,13 +84,18 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-md-2">
-                  <label for="trays">Trays</label>
+                  <label class="card-label" for="trays">Trays:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-10">
                   <ul>
                   <% if(r.trays) { %>
                     <% r.trays.forEach(function(t) { %>
                       <li><%= t.tray %></li>
+                    <% }); %>
+                  <% } %>
+                  <% if(r.supplies) { %>
+                    <% r.supplies.forEach(function(s) { %>
+                      <li><%= s.supply %></li>
                     <% }); %>
                   <% } %>
                   </ul>
@@ -87,13 +103,13 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <div class="row card-body">
             <div class="col-md-6">
               <div class="row">
                 <div class="col-md-2">
-                  <label for="medications">Medications</label>
+                  <label class="card-label" for="medications">Medications:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-10">
                   <ul>
                   <% if (r.medications) { %>
                     <% r.medications.forEach(function(m) { %>
@@ -107,9 +123,9 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-md-2">
-                  <label for="Notes">Notes</label>
+                  <label class="card-label" for="Notes">Notes:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-10">
                   <%= r.comment %>
                 </div>
               </div>
@@ -126,11 +142,15 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/awesomplete.min.js"></script>
     <script>
-      var input = document.getElementById("procedureInput");
+      var procedureInput = document.getElementById("procedureInput");
 
       // Show label but insert value into the input:
-      new Awesomplete(input, {
+      new Awesomplete(procedureInput, {
 	list: <%- JSON.stringify(procedureList) %>
+      });
+      var surgeonInput = document.getElementById("surgeonInput");
+      new Awesomplete(surgeonInput, {
+        list: <%- JSON.stringify(surgeonList) %>
       });
     </script>
   </body>
