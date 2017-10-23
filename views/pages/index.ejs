@@ -47,6 +47,7 @@
               <button type="submit" form="form-print" class="btn">
                 <i class="fa fa-print" aria-hidden="true"></i>
               </button>
+              <a href="https://tiny.cc/meeth" class="button btn" title="Add a new card"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
             </div>
           </form>
           </div>
@@ -65,12 +66,10 @@
             </div>
           </div>
           <div class="row card-body">
-            <div class="col-md-6">
+            <div class="col-md-7">
               <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-4">
                   <label class="card-label" for="equipment">Equipment:</label>
-                </div>
-                <div class="col-md-10">
                   <ul>
                   <% if(r.specific_equipment) { %>
                     <% r.specific_equipment.forEach(function(e) { %>
@@ -79,20 +78,19 @@
                   <% } %>
                   </ul>
                 </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-4">
                   <label class="card-label" for="trays">Trays:</label>
-                </div>
-                <div class="col-md-10">
                   <ul>
-                  <% if(r.trays) { %>
-                    <% r.trays.forEach(function(t) { %>
-                      <li><%= t.tray %></li>
-                    <% }); %>
-                  <% } %>
+                    <% if(r.trays) { %>
+                      <% r.trays.forEach(function(t) { %>
+                        <li><%= t.tray %></li>
+                      <% }); %>
+                    <% } %>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <label class="card-label" for="Supplies">Supplies:</label>
+                  <ul>
                   <% if(r.supplies) { %>
                     <% r.supplies.forEach(function(s) { %>
                       <li><%= s.supply %></li>
@@ -102,33 +100,37 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div class="row card-body">
-            <div class="col-md-6">
+            <div class="col-md-5">
               <div class="row">
-                <div class="col-md-2">
-                  <label class="card-label" for="medications">Medications:</label>
-                </div>
-                <div class="col-md-10">
+                <div class="col-md-6">
+                  <label class="card-label" for="dressings">Dressings:</label>
                   <ul>
-                  <% if (r.medications) { %>
-                    <% r.medications.forEach(function(m) { %>
-                      <li><%= m.medication %></li>
+                  <% if(r.dressing) { %>
+                    <% r.dressing.forEach(function(s) { %>
+                      <li><%= s.column_1 %></li>
                     <% }); %>
                   <% } %>
                   </ul>
                 </div>
+                <div class="col-md-6">
+                  <label class="card-label" for="medications">Medications:</label>
+                  <ul>
+                    <% if (r.medications) { %>
+                      <% r.medications.forEach(function(m) { %>
+                        <li><%= m.medication %></li>
+                      <% }); %>
+                    <% } %>
+                  </ul>
+                </div>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="row">
-                <div class="col-md-2">
-                  <label class="card-label" for="Notes">Notes:</label>
-                </div>
-                <div class="col-md-10">
-                  <%= r.comment %>
-                </div>
-              </div>
+          </div>
+          <div class="row card-body">
+            <div class="col-md-2">
+              <label class="card-label" for="Notes">Notes:</label>
+            </div>
+            <div class="col-md-10">
+              <%= r.comment %>
             </div>
           </div>
           </div>
