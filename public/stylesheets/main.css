@@ -67,7 +67,7 @@ body {
   font-size: .8rem;
 }
 
-@media (min-width: 576px) {
+@media (max-width: 576px) {
   .container {
     max-width: 100%;
   }
