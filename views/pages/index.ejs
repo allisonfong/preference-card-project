@@ -75,7 +75,7 @@
             </div>
             <div class="col-md-2">
               <br />
-              <button type="submit" onClick="addCardId('<%=r.id%>')" class="add-card btn">
+              <button onClick="return addCardId('<%=r.id%>')" class="add-card btn">
                 Add to Print
               </button>
             </div>
@@ -197,6 +197,8 @@
 
         var element = document.getElementById("card-id-row");
         element.appendChild(d);
+
+        return false;
       };
     </script>
   </body>
