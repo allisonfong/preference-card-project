@@ -30,6 +30,10 @@ app.get('/', function(request, response) {
   console.log('REQUEST: ' + JSON.stringify(request.query));
   var surgeon = request.query.surgeon;
   var procedure = request.query.procedure;
+  var previousPreferenceIds = [];
+  if (request.query.preference) {
+    previousPreferenceIds = request.query.preference;
+  }
   var results = [];
   var lint = ejsLint('views/pages/index.ejs', {results: results});
   getProceduresAndSurgeons()
@@ -62,7 +66,8 @@ app.get('/', function(request, response) {
             procedureList: procedureList,
             surgeonList: surgeonList,
             surgeon: surgeon,
-            procedure: procedure
+            procedure: procedure,
+            previousPreferenceIds: previousPreferenceIds
           });
         });
       });
@@ -75,7 +80,8 @@ app.get('/', function(request, response) {
         procedureList: procedureList,
         surgeonList: surgeonList,
         surgeon: surgeon,
-        procedure: procedure
+        procedure: procedure,
+        previousPreferenceIds: previousPreferenceIds
       });
   }
     });

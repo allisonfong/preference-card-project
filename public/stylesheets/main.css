@@ -32,6 +32,11 @@ button.btn {
   background-color: #FFF;
 }
 
+button.add-card {
+  font-size: .8rem;
+  border: 1px solid #808080
+}
+
 .form-check-input {
   margin-left: 0;
 }
@@ -55,6 +60,15 @@ ul {
 .card-body {
   padding: 20px;
   margin: 0px
+}
+.card-id {
+  border: 1px solid #BDBDBD;
+  border-radius: 5px;
+  text-align: center;
+  margin: 5px;
+}
+button.close {
+  padding-bottom: 5px;
 }
 label.card-label {
   font-weight: bold;

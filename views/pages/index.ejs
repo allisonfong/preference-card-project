@@ -36,33 +36,48 @@
               <label for="surgeon" class="card-label">Surgeon: </label>
               <input id="surgeonInput" name="surgeon" type="text" value="<%= surgeon%>" class="form-control awesomplete" placeholder="Surgeon">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
               <label for="procedure" class="card-label">Procedure: </label>
               <input id="procedureInput" name="procedure" type="text" value="<%= procedure%>" class="form-control awesomplete" placeholder="Procedure">
             </div>
-            <div class="col-md-4">
-              <button type="submit" class="btn">
+            <div class="col-md-3">
+              <button type="submit" formaction="/" class="btn">
                 <i class="fa fa-search" aria-hidden="true"></i>
               </button>
-              <button type="submit" form="form-print" class="btn">
+              <button type="submit" formaction="/print" class="btn">
                 <i class="fa fa-print" aria-hidden="true"></i>
               </button>
               <a href="https://tiny.cc/meeth" class="button btn" title="Add a new card"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
             </div>
-          </form>
+            <!-- </form> -->
           </div>
-          <form action="/print" method="get" id="form-print">
+          <div id="card-id-row" class="row card-id-row">
+          <% previousPreferenceIds.forEach(function(p) { %>
+          <div class="card-id col-md-1" id="card-id-<%=p%>">
+              <input name="preference" type="hidden" value="<%= p %>">
+              <span style="display:inline-block; margin-top:5px;"><strong> <%= p %> </strong></span>
+              <button type="button" class="close" aria-label="Close" onClick="removeCardId('card-id-<%=p%>')">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+          <% }); %>
+          </div>
+          <!-- <form action="/print" method="get" id="form-print"> -->
           <% results.forEach(function(r) { %>
           <div class="card">
           <div class="row card-header">
-            <div class="col-md-12">
-              <div class="form-check">
-                <label class="card-label" style="margin-right: 10px">Select to Print: </label>
-                <input class="form-check-input" type="checkbox" value="<%=r.id%>" name="preference">
-              </div>
-              <label class="card-label">Preference Id:</label> <%= r.id%><br />
+            <div class="col-md-10">
+              <label class="card-label">Preference Id:</label> <%= r.id%>
+              <br />
               <label class="card-label">Surgeon: </label><% if(r.surgeon) { %> <% r.surgeon.forEach(function(s) { %> <%= s.surgeon %>, <% }); %> <% } %> <br />
               <label class="card-label">Procedure: </label><% if(r.procedure) { %> <% r.procedure.forEach(function(p) { %> <%= p.procedure %>, <% }); %> <% } %> <br />
+            </div>
+            <div class="col-md-2">
+              <br />
+              <button type="submit" onClick="addCardId('<%=r.id%>')" class="add-card btn">
+                Add to Print
+              </button>
             </div>
           </div>
           <div class="row card-body">
@@ -154,6 +169,35 @@
       new Awesomplete(surgeonInput, {
         list: <%- JSON.stringify(surgeonList) %>
       });
+
+      function removeCardId(cardId) {
+        var elem = document.getElementById(cardId);
+        elem.parentNode.removeChild(elem);
+      };
+
+      function addCardId(pId) {
+        var d = document.createElement("div");
+        d.id = "card-id-" + pId;
+        d.className = "card-id col-md-1";
+        var i = document.createElement("input");
+        i.name = "preference";
+        i.type = "hidden";
+        i.value = pId;
+        d.appendChild(i);
+        var s = document.createElement("span");
+        s.style="display:inline-block; margin-top:5px;";
+        s.innerHTML = "<strong> " + pId + " </strong>";
+        d.appendChild(s);
+        var b = document.createElement("button");
+        b.className = "close";
+        b.setAttribute("onclick", "removeCardId('card-id-" + pId + "')");
+        b.setAttribute("aria-label", "Close");
+        b.innerHTML = "<span aria-hidden='true'>&times;</span>";
+        d.appendChild(b);
+
+        var element = document.getElementById("card-id-row");
+        element.appendChild(d);
+      };
     </script>
   </body>
 </html>
