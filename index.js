@@ -32,7 +32,11 @@ app.get('/', function(request, response) {
   var procedure = request.query.procedure;
   var previousPreferenceIds = [];
   if (request.query.preference) {
-    previousPreferenceIds = request.query.preference;
+    if (Array.isArray(request.query.preference)) {
+      previousPreferenceIds = request.query.preference;
+    } else {
+      previousPreferenceIds.push(request.query.preference);
+    }
   }
   var results = [];
   var lint = ejsLint('views/pages/index.ejs', {results: results});

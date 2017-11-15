@@ -53,7 +53,7 @@
           </div>
           <div id="card-id-row" class="row card-id-row">
           <% previousPreferenceIds.forEach(function(p) { %>
-          <div class="card-id col-md-1" id="card-id-<%=p%>">
+            <div class="card-id col-md-1" id="card-id-<%=p%>">
               <input name="preference" type="hidden" value="<%= p %>">
               <span style="display:inline-block; margin-top:5px;"><strong> <%= p %> </strong></span>
               <button type="button" class="close" aria-label="Close" onClick="removeCardId('card-id-<%=p%>')">
